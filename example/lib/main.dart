@@ -28,19 +28,29 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
-    FindData.byId("myTest").update("counter", (int _counter) => _counter + 1);
+    FindData.byId("myText").update("counter", (_counter) => _counter + 1);
+    FindData.byId("anotherText").update("text", (_txt) => _txt + "!");
 //    debugPrint(FindData.byId("myTest").get("counter").toString());
   }
 
   @override
   void initState() {
     super.initState();
+
     Find.add(
       id: "myText",
-      builder: (Map _data) => Text(_data["counter"].toString(), style: TextStyle(fontSize: 24.0),),
       initial: {
         "counter": 0,
       },
+      builder: (Map _data) => Text(_data["counter"].toString(), style: TextStyle(fontSize: 24.0),),
+    );
+
+    Find.add(
+      id: "anotherText",
+      initial: {
+        "text": "hello",
+      },
+      builder: (Map _data) => Text(_data["text"]),
     );
   }
 
@@ -59,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Find.byId("myText"),
+            Find.byId("anotherText"),
           ],
         ),
       ),

@@ -6,12 +6,13 @@ import 'package:flutter/widgets.dart';
 class Find {
 
   @protected
-  static SplayTreeMap<String,Widget> _widgetMap = SplayTreeMap();
+  static HashMap<String,Widget> _widgetMap = HashMap();
 
   @protected
-  static SplayTreeMap<String,GlobalKey> _keyMap = SplayTreeMap();
+  static HashMap<String,GlobalKey> _keyMap = HashMap();
 
   static Widget byId(String id) {
+    if(!_widgetMap.containsKey(id)) throw "Find: ID '$id' not in tree. Please double check your .byId() call and try again.";
     return _widgetMap[id];
   }
 
@@ -43,7 +44,7 @@ class Find {
 
 class FindData {
   @protected
-  static SplayTreeMap<String,Map<String,dynamic>> _dataMap = SplayTreeMap();
+  static HashMap<String,Map<String,dynamic>> _dataMap = HashMap();
 
   static Map<String,dynamic> get(String id) {
     return _dataMap[id];
@@ -53,7 +54,10 @@ class FindData {
     _dataMap[id] = val;
   }
 
-  static FindDataValue byId(String id) => FindDataValue(id);
+  static FindDataValue byId(String id) {
+    if(!_dataMap.containsKey(id)) throw "Find: ID '$id' not in tree. Please double check your .byId() call and try again.";
+    return FindDataValue(id);
+  }
 
 }
 
