@@ -1,6 +1,6 @@
 name: find
 description: Simple, performant state management for Flutter. 
-version: 0.0.1
+version: 1.0.0
 authors:
   - Christian Lewis<ctjl96@gmail.com>
   - Hercules Team<hello@hercules.dev>
