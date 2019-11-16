@@ -8,14 +8,14 @@ Define a new ID with static `Find.add` method anywhere in the app (before first 
 ```
 Find.add(  
   id: "myText",  
-  initial: {  
+  initialState: {  
     "counter": 0,  
   },  
   builder: (Map _state) =>
     Text(_state["counter"].toString()),
 );
 ```
-It takes three arguments: a string `id`, a Map `initial` for the first state, and a `builder` that will build the Widget from the passed state (`_state`).
+It takes three arguments: a string `id`, a Map `initialState` for the first state, and a `builder` that will build the Widget from the passed state (`_state`).
 
 Displaying the Widget is done anywhere in code with `Find.byId("myText")`. **That's it!**  The only logic you need to worry about is ensuring you call Find.add() before using Find.byId(), and initState overrides are a good place for this.
 
