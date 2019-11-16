@@ -1,98 +1,85 @@
 library find;
 import 'dart:collection';
-
 import 'package:flutter/widgets.dart';
 
 class Find {
 
-  @protected
-  static HashMap<String,Widget> _widgetMap = HashMap();
+  static HashMap<String,FindWidgetBuilder> builderMap = HashMap();
+  static HashMap<String,State<StatefulWidget>> stateMap = HashMap();
+  static bool idExists(String id) => builderMap.containsKey(id);
 
-  @protected
-  static HashMap<String,GlobalKey> _keyMap = HashMap();
-
-  static Widget byId(String id) {
-    if(!_widgetMap.containsKey(id)) throw "Find: ID '$id' not in tree. Please double check your .byId() call and try again.";
-    return _widgetMap[id];
-  }
+  static Widget byId(String id) => builderMap[id].build();
+  static State<StatefulWidget> getState(String id) => stateMap[id];
+  static void setState(String id, State<StatefulWidget> state) => stateMap[id] = state;
 
   static add({
     @required String id,
     @required Function builder,
-    @required Map<String,dynamic> initial
+    @required Map<String,dynamic> initialState
   }) {
-    // quit if exists already
-    if(_widgetMap.containsKey(id)) throw "Find: ID already defined. Please remove duplicate definition and restart.";
-
-    final Key _generatedKey = GlobalKey();
 
     // set initial data in dataMap
-    FindData._dataMap[id] = initial;
-
-    // add key to keyMap
-    _keyMap[id] = _generatedKey;
+    FindData.set(id, initialState);
 
     // set widget in widgetMap
-    _widgetMap[id] = FindWidget(
-      key: _generatedKey,
-      id: id,
-      builder: builder,
+    builderMap[id] = FindWidgetBuilder(
+      () => FindWidget(
+        id: id,
+        builder: builder,
+      ),
     );
   }
 
 }
 
 class FindData {
-  @protected
+
   static HashMap<String,Map<String,dynamic>> _dataMap = HashMap();
 
-  static Map<String,dynamic> get(String id) {
-    return _dataMap[id];
-  }
+  static Map<String,dynamic> get(String id) => _dataMap[id];
+  static dynamic getValue(String id, String name) => _dataMap[id][name];
 
-  static void set(String id, Map val) {
-    _dataMap[id] = val;
-  }
+  static void set(String id, Map<String,dynamic> val) => _dataMap[id] = val;
+  static void setValue(String id, String name, dynamic val) => _dataMap[id][name] = val;
 
-  static FindDataValue byId(String id) {
-    if(!_dataMap.containsKey(id)) throw "Find: ID '$id' not in tree. Please double check your .byId() call and try again.";
-    return FindDataValue(id);
-  }
+  static FindDataValue byId(String id) => FindDataValue(id);
 
+}
+
+class FindWidgetBuilder {
+  FindWidgetBuilder(this.builder);
+  final Function builder;
+
+  FindWidget build() => builder();
 }
 
 class FindDataValue {
   FindDataValue(this.id);
   final String id;
 
-  @protected
-  void _rebuild() => Find._keyMap[id].currentState.setState((){});
+  dynamic get(String name) => FindData.getValue(id, name);
 
-  @protected
-  void set(String name, val) {
-    FindData._dataMap[id][name] = val;
+  void set(String name, dynamic val) {
+    FindData.setValue(id, name, val);
     _rebuild();
   }
 
-  @protected
   void update(String name, Function builder) {
-    FindData._dataMap[id][name] = builder(FindData._dataMap[id][name]);
+    FindData.setValue(id, name, builder(FindData.getValue(id, name)));
     _rebuild();
   }
 
   @protected
-  dynamic get(String name) => FindData._dataMap[id][name];
+  void _rebuild() => Find.getState(id).setState((){});
 
 }
 
 class FindWidget extends StatefulWidget {
   FindWidget({
-    @required this.key,
     @required this.id,
     @required this.builder,
   });
 
-  final GlobalKey<State<StatefulWidget>> key;
   final String id;
   final Function builder;
 
@@ -101,9 +88,15 @@ class FindWidget extends StatefulWidget {
 }
 
 class _FindWidgetState extends State<FindWidget> {
+
+  @override
+  void initState() {
+    super.initState();
+    Find.setState(widget.id, this);
+  }
+
   @override
   Widget build(BuildContext context) {
-//    debugPrint("FindWidget rebuilt.");
     return widget.builder(
         FindData.get(widget.id)
     );

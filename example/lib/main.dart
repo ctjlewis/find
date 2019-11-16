@@ -30,27 +30,40 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     FindData.byId("myText").update("counter", (_counter) => _counter + 1);
     FindData.byId("anotherText").update("text", (_txt) => _txt + "!");
-//    debugPrint(FindData.byId("myTest").get("counter").toString());
+    //    debugPrint(FindData.byId("myTest").get("counter").toString());
   }
 
   @override
   void initState() {
     super.initState();
 
+    /// Associate the ID with the [Find] library.
     Find.add(
+
+      /// an HTML-like id of type String
       id: "myText",
-      initial: {
+
+      /// initial state
+      initialState: {
         "counter": 0,
       },
-      builder: (Map _data) => Text(_data["counter"].toString(), style: TextStyle(fontSize: 24.0),),
+
+      /// Function that builds Widget from given state
+      builder: (Map _state) =>
+          Text(
+            _state["counter"].toString(),
+            style: TextStyle(fontSize: 24.0),
+          ),
+
     );
 
     Find.add(
       id: "anotherText",
-      initial: {
+      initialState: {
         "text": "hello",
       },
-      builder: (Map _data) => Text(_data["text"]),
+      builder: (Map _state) =>
+          Text(_state["text"]),
     );
   }
 

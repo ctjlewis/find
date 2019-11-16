@@ -13,8 +13,7 @@ Find.add(
     "counter": 0,  
   },  
   builder: (Map _data) =>
-    Text(_data["counter"].toString()
-  ),
+    Text(_data["counter"].toString()),
 );
 ```
 It takes three arguments: a string `id`, a Map `initial` for the first state, and a `builder` that will build the Widget from the passed state (`_data`).
