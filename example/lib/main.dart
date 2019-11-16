@@ -28,8 +28,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
-    FindData.byId("myText").update("counter", (_counter) => _counter + 1);
-    FindData.byId("anotherText").update("text", (_txt) => _txt + "!");
+    FindData.byId("myText").updateValue("counter", (_counter) => _counter + 1);
+    FindData.byId("anotherText").updateValue("text", (_txt) => _txt + "!");
     //    debugPrint(FindData.byId("myTest").get("counter").toString());
   }
 

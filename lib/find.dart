@@ -4,28 +4,38 @@ import 'package:flutter/widgets.dart';
 
 class Find {
 
-  static HashMap<String,FindWidgetBuilder> builderMap = HashMap();
+  static HashMap<String,FindWidget> builderMap = HashMap();
   static HashMap<String,State<StatefulWidget>> stateMap = HashMap();
   static bool idExists(String id) => builderMap.containsKey(id);
 
-  static Widget byId(String id) => builderMap[id].build();
+  static Widget byId(String id) => builderMap[id];
   static State<StatefulWidget> getState(String id) => stateMap[id];
   static void setState(String id, State<StatefulWidget> state) => stateMap[id] = state;
 
-  static add({
+  static FindWidget add({
     @required String id,
     @required Function builder,
-    @required Map<String,dynamic> initialState
+    @required Map initialState
   }) {
 
     // set initial data in dataMap
-    FindData.set(id, initialState);
+    FindData.addInitialState(id, initialState);
 
     // set widget in widgetMap
-    builderMap[id] = FindWidgetBuilder(
+    final FindWidget _res = FindWidget(
       id: id,
       builder: builder,
     );
+
+    builderMap[id] = _res;
+    return _res;
+  }
+
+  @protected
+  void _rebuild(String id) {
+    final State<StatefulWidget> _curState = getState(id);
+    if(_curState == null) return;
+    else _curState.setState((){});
   }
 
 }
@@ -40,36 +50,61 @@ class FindWidgetBuilder {
 
 class FindData {
 
-  static HashMap<String,Map<String,dynamic>> _dataMap = HashMap();
+  static HashMap<String,Map> _dataMap = HashMap();
+  static HashMap<String,Map> _initialsMap = HashMap();
 
-  static Map<String,dynamic> get(String id) => _dataMap[id];
+  static void addInitialState(String id, Map initialState) {
+    _dataMap[id] = initialState;
+    _initialsMap[id] = Map.unmodifiable(initialState);
+  }
+  static Map getInitialState(String id) => _initialsMap[id];
+  static dynamic getInitialValue(String id, String name) => getInitialState(id)[name];
+
+  static Map get(String id) => _dataMap[id];
   static dynamic getValue(String id, String name) => _dataMap[id][name];
 
-  static void set(String id, Map<String,dynamic> val) => _dataMap[id] = val;
+  static void set(String id, Map val) => _dataMap[id] = val;
   static void setValue(String id, String name, dynamic val) => _dataMap[id][name] = val;
 
-  static FindDataValue byId(String id) => FindDataValue(id);
+  static void update(String id, Function builder) => set(id, builder(get(id)));
+  static void updateValue(String id, String name, Function builder)
+  => setValue(id, name, builder(getValue(id, name)));
+
+  static IdDataTable byId(String id) => IdDataTable(id);
 
 }
 
-class FindDataValue {
-  FindDataValue(this.id);
+class IdDataTable {
+  IdDataTable(this.id);
   final String id;
 
   dynamic get(String name) => FindData.getValue(id, name);
 
-  void set(String name, dynamic val) {
+  void set(Map val) {
+    FindData.set(id, val);
+    rebuild();
+  }
+
+  void setValue(String name, dynamic val) {
     FindData.setValue(id, name, val);
-    _rebuild();
+    rebuild();
   }
 
-  void update(String name, Function builder) {
+  void update(Function builder) {
+    FindData.set(id, builder(FindData.get(id)));
+    rebuild();
+  }
+
+  void updateValue(String name, Function builder) {
     FindData.setValue(id, name, builder(FindData.getValue(id, name)));
-    _rebuild();
+    rebuild();
   }
 
-  @protected
-  void _rebuild() => Find.getState(id).setState((){});
+  void rebuild() {
+    final State<StatefulWidget> _curState = Find.getState(id);
+    if(_curState == null) return;
+    else _curState.setState((){});
+  }
 
 }
 
