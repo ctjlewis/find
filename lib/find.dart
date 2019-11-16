@@ -18,26 +18,24 @@ class Find {
     @required Map initialState
   }) {
 
+    debugPrint("FindWidget.add called");
+
     // set initial data in dataMap
     FindData.addInitialState(id, initialState);
 
     // set widget in widgetMap
-    final FindWidget _res = FindWidget(
+//    final FindWidget _res = FindWidget(
+//      id: id,
+//      builder: builder,
+//    );
+
+    builderMap[id] = FindWidget(
       id: id,
       builder: builder,
     );
 
-    builderMap[id] = _res;
-    return _res;
+    return builderMap[id];
   }
-
-  @protected
-  void _rebuild(String id) {
-    final State<StatefulWidget> _curState = getState(id);
-    if(_curState == null) return;
-    else _curState.setState((){});
-  }
-
 }
 
 class FindWidgetBuilder {

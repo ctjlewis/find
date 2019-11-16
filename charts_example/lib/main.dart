@@ -105,39 +105,12 @@ class _HomePageState extends State<HomePage> {
             value: _value,
             onChanged: (i) => setState(() => _value = i),
           ),
-
-//          Find.add(
-//            id: "slider",
-//            initialState: {
-//              "value": 50.0,
-//            },
-//            builder: (_state) {
-//              debugPrint(_state.toString());
-//              return Slider(
-//                min: 0.0,
-//                max: 100.0,
-//                value: FindData.getValue("slider", "value"),
-//                onChanged: (i) => setState(() {
-//                  FindData.byId("slider").setValue("value", i);
-//                  FindData.byId("slider").rebuild();
-//                }),
-//              );
-//            }),
-
-          Slider(
-            value: FindData.getValue("slider", "value"),
-            onChanged: (double v) =>
-                setState(
-                  (){
-                    final double _pct = v/100;
-                    debugPrint(_pct.toString());
-                    final double _init = FindData.getInitialValue("chartData", "Flutter");
-                    FindData.setValue("slider", "value", v);
-                    FindData.setValue("chartData", "Flutter", _init*_pct);
-                  }
-                ),
-            min: 0.0,
-            max: 100.0,
+          Find.add(
+            id: "slider",
+            initialState: {
+              "value": 50.0,
+            },
+            builder: (i) => MySlider(),
           ),
         ],
       ),
@@ -154,3 +127,53 @@ class _HomePageState extends State<HomePage> {
     });
   }
 }
+
+class MySlider extends StatefulWidget {
+  @override
+  _MySliderState createState() => _MySliderState();
+}
+
+class _MySliderState extends State<MySlider> {
+  @override
+  Widget build(BuildContext context) {
+
+    return Find.add(
+      id: "slider",
+      initialState: {
+        "value": 0.0,
+      },
+      builder: (_state) => Slider(
+        value: _state["value"],
+        onChanged: (double v) =>
+            setState(
+                    (){
+                  debugPrint("Slider: $v");
+                  final double _pct = v/100;
+                  final double _init = FindData.getInitialValue("chartData", "Flutter");
+                  FindData.setValue("slider", "value", v);
+                  FindData.setValue("chartData", "Flutter", _init*_pct);
+                }
+            ),
+        min: 0.0,
+        max: 100.0,
+      ),
+    );
+
+//    return Slider(
+//      value: FindData.getValue("slider", "value"),
+//      onChanged: (double v) =>
+//          setState(
+//              (){
+//                debugPrint("Slider: $v");
+//                final double _pct = v/100;
+//                final double _init = FindData.getInitialValue("chartData", "Flutter");
+//                FindData.setValue("slider", "value", v);
+//                FindData.setValue("chartData", "Flutter", _init*_pct);
+//              }
+//          ),
+//      min: 0.0,
+//      max: 100.0,
+//    );
+  }
+}
+
