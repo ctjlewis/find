@@ -23,13 +23,19 @@ class Find {
 
     // set widget in widgetMap
     builderMap[id] = FindWidgetBuilder(
-      () => FindWidget(
-        id: id,
-        builder: builder,
-      ),
+      id: id,
+      builder: builder,
     );
   }
 
+}
+
+class FindWidgetBuilder {
+  FindWidgetBuilder({@required this.id, @required this.builder});
+  final String id;
+  final Function builder;
+
+  FindWidget build() => FindWidget(id: id, builder: builder);
 }
 
 class FindData {
@@ -44,13 +50,6 @@ class FindData {
 
   static FindDataValue byId(String id) => FindDataValue(id);
 
-}
-
-class FindWidgetBuilder {
-  FindWidgetBuilder(this.builder);
-  final Function builder;
-
-  FindWidget build() => builder();
 }
 
 class FindDataValue {
